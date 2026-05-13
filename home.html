@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vikasa Navigation</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="phone">
+    <svg class="logo" viewBox="0 0 5335 3210" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="inv">
+          <feColorMatrix type="matrix"
+            values="-1 0 0 0 1
+                     0 -1 0 0 1
+                     0 0 -1 0 1
+                     0 0  0 1 0"/>
+        </filter>
+        <mask id="logo-shape">
+          <image href="vikasanav.png" width="5335" height="3210" filter="url(#inv)"/>
+        </mask>
+      </defs>
+      <image href="v4.png" width="5335" height="3210"
+             preserveAspectRatio="xMidYMid slice"
+             mask="url(#logo-shape)"/>
+    </svg>
+  </div>
+  <script>
+    // After the animation completes, go to the main app
+    setTimeout(() => window.location.href = 'nav.html', 3000);
+  </script>
+</body>
+</html>
