@@ -7,28 +7,60 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="phone">
-    <svg class="logo" viewBox="0 0 5335 3210" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <filter id="inv">
-          <feColorMatrix type="matrix"
-            values="-1 0 0 0 1
-                     0 -1 0 0 1
-                     0 0 -1 0 1
-                     0 0  0 1 0"/>
-        </filter>
-        <mask id="logo-shape">
-          <image href="vikasanav.png" width="5335" height="3210" filter="url(#inv)"/>
-        </mask>
-      </defs>
-      <image href="v4.png" width="5335" height="3210"
-             preserveAspectRatio="xMidYMid slice"
-             mask="url(#logo-shape)"/>
-    </svg>
+  <div class="logomark" id="logomark">
+    <img src="logomark.png" alt="Vikasa logomark">
   </div>
+
+  <div class="phone hidden" id="phone">
+    <!-- nav.png fades in then out -->
+    <div class="logomark-inner" id="nav-logo">
+      <img src="nav.png" alt="Vikasa navlogo">
+    </div>
+
+    <!-- navigation screen, shown after nav.png fades out -->
+    <div class="nav-screen hidden" id="nav-screen">
+      <div class="top-indicators">
+        <div class="indicator"></div>
+        <div class="indicator"></div>
+      </div>
+      <div class="top-bar">
+        <div class="top-bar-row">
+          <span class="label">TO</span>
+          <input type="text" class="input-field">
+        </div>
+        <div class="top-bar-row">
+          <span class="label">FROM</span>
+          <input type="text" class="input-field">
+        </div>
+      </div>
+      <div class="circle-map">
+        <img src="circleg.png" alt="Navigation map">
+        <svg class="circle-rings" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="transform: translateX(3%)">
+          <circle cx="50" cy="49" r="43.2" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.4"/>
+          <circle cx="50" cy="49" r="33" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="0.3"/>
+          <circle cx="50" cy="49" r="22" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="0.3"/>
+          <circle cx="50" cy="49" r="11" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="0.3"/>
+        </svg>
+      </div>
+      <div class="bottom-text">
+        <p class="you-are">YOU ARE @</p>
+        <p class="coords">RA = 6CU : 14LU</p>
+        <p class="coords">DEC = -12° : 10LU</p>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // After the animation completes, go to the main app
-    setTimeout(() => window.location.href = 'nav.html', 3000);
+    document.getElementById('logomark').addEventListener('click', () => {
+      document.getElementById('logomark').classList.add('hidden');
+      document.getElementById('phone').classList.remove('hidden');
+
+      // show nav screen after nav.png finishes (0.5s delay + 3s animation)
+      setTimeout(() => {
+        document.getElementById('nav-logo').classList.add('hidden');
+        document.getElementById('nav-screen').classList.remove('hidden');
+      }, 3500);
+    });
   </script>
 </body>
 </html>
