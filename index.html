@@ -12,12 +12,11 @@
   </div>
 
   <div class="phone hidden" id="phone">
-    <!-- nav.png fades in then out -->
+ 
     <div class="logomark-inner" id="nav-logo">
       <img src="nav.png" alt="Vikasa navlogo">
     </div>
 
-    <!-- navigation screen, shown after nav.png fades out -->
     <div class="nav-screen hidden" id="nav-screen">
       <div class="top-bar">
         <div class="to-section">
@@ -41,16 +40,20 @@
         </div>
         <div class="from-section">
           <span class="label">FROM</span>
-          <span class="here-btn" id="here-btn">HERE</span>
-          <div class="here-dropdown hidden" id="here-dropdown">
-            <input class="blank" type="text" placeholder="enter location">
-          </div>
+          <span class="here-btn">HERE</span>
         </div>
+        <button class="done-btn" title="Done"><img src="arrow.png" alt="go"></button>
       </div>
       <div class="circle-map">
         <img src="circleg.png" alt="Navigation map">
         <svg class="circle-rings" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="transform: translateX(3%)">
           <circle cx="50" cy="49" r="43.2" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.4"/>
+          <g class="spin-fast">
+            <line x1="50" y1="49" x2="87.4" y2="27.4" stroke="rgba(255,255,255,0.35)" stroke-width="0.4"/>
+          </g>
+          <g class="spin-slow">
+            <line x1="50" y1="49" x2="53.8" y2="92" stroke="rgba(255,255,255,0.35)" stroke-width="0.4"/>
+          </g>
           <circle cx="50" cy="49" r="33" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="0.3"/>
           <circle cx="50" cy="49" r="22" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="0.3"/>
           <circle cx="50" cy="49" r="11" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="0.3"/>
@@ -65,16 +68,20 @@
   </div>
 
   <script>
-    document.getElementById('here-btn').addEventListener('click', () => {
-      document.getElementById('here-dropdown').classList.toggle('hidden');
-      document.getElementById('here-btn').classList.toggle('hidden');
+    function checkBlanks() {
+      const blanks = document.querySelectorAll('.to-section .blank');
+      const allFilled = [...blanks].every(b => b.value.trim() !== '');
+      document.querySelector('.done-btn').classList.toggle('glow', allFilled);
+    }
+
+    document.querySelectorAll('.to-section .blank').forEach(b => {
+      b.addEventListener('input', checkBlanks);
     });
 
     document.getElementById('logomark').addEventListener('click', () => {
       document.getElementById('logomark').classList.add('hidden');
       document.getElementById('phone').classList.remove('hidden');
 
-      // show nav screen after nav.png finishes (0.5s delay + 3s animation)
       setTimeout(() => {
         document.getElementById('nav-logo').classList.add('hidden');
         document.getElementById('nav-screen').classList.remove('hidden');

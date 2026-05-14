@@ -105,6 +105,7 @@ body:active {
   align-items: center;
   padding: 24px 16px;
   animation: fadeIn 0.6s ease forwards;
+  pointer-events: all;
 }
 
 .top-bar {
@@ -116,6 +117,8 @@ body:active {
   margin-top: 140px;
   margin-bottom: 20px;
   gap: 16px;
+  position: relative;
+  z-index: 10;
 }
 
 .to-section {
@@ -167,11 +170,14 @@ body:active {
   color: rgba(183, 88, 132, 0.9);
   font-size: 11px;
   font-family: sans-serif;
-  width: 26px;
+  width: 18px;
   outline: none;
   cursor: text;
   padding: 0 1px;
   text-align: center;
+  pointer-events: all;
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 .here-btn {
@@ -182,19 +188,32 @@ body:active {
   cursor: pointer;
 }
 
-.here-dropdown {
-  position: absolute;
-  top: 20px;
-  left: 0;
-  background: rgba(0,0,0,0.85);
-  border: 1px solid rgba(183, 88, 132, 0.5);
-  border-radius: 4px;
-  padding: 6px 8px;
-  z-index: 10;
+.done-btn {
+  width: 32px;
+  height: 32px;
+  background: rgba(183, 88, 132, 0.7);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  align-self: center;
+  padding: 6px;
 }
 
-.here-dropdown input {
-  width: 80px;
+.done-btn.glow {
+  box-shadow:
+    0 0 8px 2px rgba(183, 88, 132, 0.9),
+    0 0 20px 4px rgba(183, 88, 132, 0.5);
+  transition: box-shadow 0.4s ease;
+}
+
+.done-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .circle-map {
@@ -207,6 +226,7 @@ body:active {
   overflow: hidden;
   padding-left: 12px;
   position: relative;
+  pointer-events: none;
 }
 
 .bottom-text {
@@ -235,6 +255,23 @@ body:active {
   width: 100%;
   height: 100%;
   animation: pulse 3s ease-in-out infinite;
+}
+
+.spin-fast {
+  transform-box: view-box;
+  transform-origin: 50% 49%;
+  animation: spin 12s linear infinite;
+}
+
+.spin-slow {
+  transform-box: view-box;
+  transform-origin: 50% 49%;
+  animation: spin 30s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
 @keyframes pulse {
