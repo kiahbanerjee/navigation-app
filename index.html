@@ -19,18 +19,32 @@
 
     <!-- navigation screen, shown after nav.png fades out -->
     <div class="nav-screen hidden" id="nav-screen">
-      <div class="top-indicators">
-        <div class="indicator"></div>
-        <div class="indicator"></div>
-      </div>
       <div class="top-bar">
-        <div class="top-bar-row">
+        <div class="to-section">
           <span class="label">TO</span>
-          <input type="text" class="input-field">
+          <div class="coord-lines">
+            <div class="coord-row">
+              <span class="coord-label">RA:</span>
+              <input class="blank" type="text" size="2">
+              <span class="coord-unit">CU :</span>
+              <input class="blank" type="text" size="2">
+              <span class="coord-unit">LU</span>
+            </div>
+            <div class="coord-row">
+              <span class="coord-label">DEC:</span>
+              <input class="blank" type="text" size="2">
+              <span class="coord-unit">° :</span>
+              <input class="blank" type="text" size="2">
+              <span class="coord-unit">LU</span>
+            </div>
+          </div>
         </div>
-        <div class="top-bar-row">
+        <div class="from-section">
           <span class="label">FROM</span>
-          <input type="text" class="input-field">
+          <span class="here-btn" id="here-btn">HERE</span>
+          <div class="here-dropdown hidden" id="here-dropdown">
+            <input class="blank" type="text" placeholder="enter location">
+          </div>
         </div>
       </div>
       <div class="circle-map">
@@ -51,6 +65,11 @@
   </div>
 
   <script>
+    document.getElementById('here-btn').addEventListener('click', () => {
+      document.getElementById('here-dropdown').classList.toggle('hidden');
+      document.getElementById('here-btn').classList.toggle('hidden');
+    });
+
     document.getElementById('logomark').addEventListener('click', () => {
       document.getElementById('logomark').classList.add('hidden');
       document.getElementById('phone').classList.remove('hidden');
