@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vikasa Navigation</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://use.typekit.net/nbd1bcq.css">
 </head>
 <body>
   <div class="logomark" id="logomark">
@@ -46,6 +47,7 @@
       </div>
       <div class="circle-map">
         <img src="circleg.png" alt="Navigation map">
+        <svg id="route-svg" class="route-svg hidden" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:10;transform:translateX(3%)"></svg>
         <svg class="circle-rings" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="transform: translateX(3%)">
           <circle cx="50" cy="49" r="43.2" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.4"/>
           <g class="spin-fast">
@@ -64,6 +66,12 @@
         <p class="coords">RA = 6CU : 14LU</p>
         <p class="coords">DEC = -12° : 10LU</p>
       </div>
+      <button class="back-btn hidden" id="back-btn">←</button>
+      <div class="nav-directions hidden" id="nav-directions">
+        <p class="nav-dir-label">NAVIGATING</p>
+        <p class="nav-dir-main" id="nav-dir-main"></p>
+        <p class="nav-dir-dist" id="nav-dir-dist"></p>
+      </div>
     </div>
   </div>
 
@@ -76,6 +84,148 @@
 
     document.querySelectorAll('.to-section .blank').forEach(b => {
       b.addEventListener('input', checkBlanks);
+    });
+
+    const zoomTargets = [
+      'translate(-6px, -55px) scale(2)',
+      'translate(-76px, -135px) scale(2)',
+      'translate(64px, -135px) scale(2)',
+      'translate(-76px, 5px) scale(2)',
+      'translate(64px, 5px) scale(2)',
+      'translate(-106px, -55px) scale(2)',
+      'translate(94px, -55px) scale(2)',
+    ];
+
+    const CX = 50, CY = 49, CR = 41;
+
+    function clampToCircle(x, y) {
+      const dx = x - CX, dy = y - CY;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      if (d > CR) return { x: CX + dx / d * CR, y: CY + dy / d * CR };
+      return { x, y };
+    }
+
+    function buildSquigglyPath(startX, startY, endX, endY) {
+      const segments = 6 + Math.floor(Math.random() * 4);
+      const pts = [{ x: startX, y: startY }];
+      for (let i = 1; i < segments; i++) {
+        const t = i / segments;
+        const raw = {
+          x: startX + (endX - startX) * t + (Math.random() - 0.5) * 15,
+          y: startY + (endY - startY) * t + (Math.random() - 0.5) * 8,
+        };
+        pts.push(clampToCircle(raw.x, raw.y));
+      }
+      pts.push({ x: endX, y: endY });
+
+      let d = `M ${pts[0].x.toFixed(2)} ${pts[0].y.toFixed(2)}`;
+      for (let i = 0; i < pts.length - 1; i++) {
+        const p0 = pts[Math.max(0, i - 1)];
+        const p1 = pts[i];
+        const p2 = pts[i + 1];
+        const p3 = pts[Math.min(pts.length - 1, i + 2)];
+        const cp1x = p1.x + (p2.x - p0.x) / 6;
+        const cp1y = p1.y + (p2.y - p0.y) / 6;
+        const cp2x = p2.x - (p3.x - p1.x) / 6;
+        const cp2y = p2.y - (p3.y - p1.y) / 6;
+        d += ` C ${cp1x.toFixed(2)} ${cp1y.toFixed(2)}, ${cp2x.toFixed(2)} ${cp2y.toFixed(2)}, ${p2.x.toFixed(2)} ${p2.y.toFixed(2)}`;
+      }
+      return d;
+    }
+
+    function drawRoute() {
+      const svgEl = document.getElementById('route-svg');
+      svgEl.innerHTML = '';
+      svgEl.classList.remove('hidden');
+
+      const ns = 'http://www.w3.org/2000/svg';
+
+      const startX = CX, startY = CY + CR;
+      const angle = Math.random() * Math.PI * 2;
+      const dist = CR * (0.1 + Math.random() * 0.35);
+      const endX = CX + Math.cos(angle) * dist;
+      const endY = CY + Math.sin(angle) * dist;
+
+      const pathEl = document.createElementNS(ns, 'path');
+      pathEl.setAttribute('d', buildSquigglyPath(startX, startY, endX, endY));
+      pathEl.setAttribute('stroke', 'white');
+      pathEl.setAttribute('stroke-width', '0.15');
+      pathEl.setAttribute('fill', 'none');
+      pathEl.setAttribute('stroke-linecap', 'round');
+      pathEl.setAttribute('stroke-linejoin', 'round');
+      svgEl.appendChild(pathEl);
+
+      const len = pathEl.getTotalLength();
+      pathEl.style.strokeDasharray = len;
+      pathEl.style.strokeDashoffset = len;
+      pathEl.getBoundingClientRect();
+      pathEl.style.transition = 'stroke-dashoffset 1.8s ease-in-out';
+      pathEl.style.strokeDashoffset = 0;
+
+      const startDot = document.createElementNS(ns, 'circle');
+      startDot.setAttribute('cx', startX);
+      startDot.setAttribute('cy', startY);
+      startDot.setAttribute('r', '0.8');
+      startDot.setAttribute('fill', 'white');
+      svgEl.appendChild(startDot);
+
+      setTimeout(() => {
+        const endDot = document.createElementNS(ns, 'circle');
+        endDot.setAttribute('cx', endX);
+        endDot.setAttribute('cy', endY);
+        endDot.setAttribute('r', '0.8');
+        endDot.setAttribute('fill', 'rgba(183, 88, 132, 0.9)');
+        svgEl.appendChild(endDot);
+      }, 1800);
+
+      const compassDirs = ['NORTH', 'NORTHEAST', 'EAST', 'SOUTHEAST', 'SOUTH', 'SOUTHWEST', 'WEST', 'NORTHWEST'];
+      const verbs = ['GO', 'HEAD', 'NAVIGATE', 'PROCEED'];
+      const normalizedAngle = ((angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+      const dirIndex = Math.round(normalizedAngle / (Math.PI / 4)) % 8;
+      const verb = verbs[Math.floor(Math.random() * verbs.length)];
+      const distLU = (1.5 + Math.random() * 8.5).toFixed(1);
+
+      setTimeout(() => {
+        document.getElementById('nav-dir-main').textContent = `${verb} ${compassDirs[dirIndex]}`;
+        document.getElementById('nav-dir-dist').textContent = `${distLU} LU`;
+        document.getElementById('nav-directions').classList.remove('hidden');
+      }, 900);
+    }
+
+    document.querySelector('.done-btn').addEventListener('click', () => {
+      const topBar = document.querySelector('.top-bar');
+      const bottomText = document.querySelector('.bottom-text');
+      const circleMap = document.querySelector('.circle-map');
+      const backBtn = document.getElementById('back-btn');
+
+      topBar.classList.add('fade-out');
+      bottomText.classList.add('fade-out');
+
+      const target = zoomTargets[Math.floor(Math.random() * zoomTargets.length)];
+      circleMap.style.transform = target;
+
+      setTimeout(() => {
+        drawRoute();
+        backBtn.classList.remove('hidden');
+      }, 800);
+    });
+
+    document.getElementById('back-btn').addEventListener('click', () => {
+      const topBar = document.querySelector('.top-bar');
+      const bottomText = document.querySelector('.bottom-text');
+      const circleMap = document.querySelector('.circle-map');
+      const backBtn = document.getElementById('back-btn');
+      const svgEl = document.getElementById('route-svg');
+
+      backBtn.classList.add('hidden');
+      svgEl.classList.add('hidden');
+      document.getElementById('nav-directions').classList.add('hidden');
+      circleMap.style.transform = '';
+
+      setTimeout(() => {
+        topBar.classList.remove('fade-out');
+        bottomText.classList.remove('fade-out');
+      }, 500);
     });
 
     document.getElementById('logomark').addEventListener('click', () => {
